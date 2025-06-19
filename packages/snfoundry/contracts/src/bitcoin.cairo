@@ -103,7 +103,6 @@ pub fn words_from_hex(hex_string: ByteArray) -> WordArray {
         words.append_u8(hi * 16 + lo);
         i += 2;
     }
-    println!("Words from hex: {:?}", words);
     words
 }
 
@@ -114,7 +113,7 @@ pub fn words_from_hex(hex_string: ByteArray) -> WordArray {
 // https://github.com/starkware-libs/cairo/blob/d5f083c3388c3c0c462dd3805cdd5531401a3783/corelib/src/sha256.cairo#L9
 fn calculate_bitcoin_hash(message: ByteArray) -> u256 {
     /// Hexadecimal format of the prefix message, same as the one used off chain on UI
-    let mut hex_prefix_message: ByteArray =
+    let hex_prefix_message: ByteArray =
         "18426974636f696e205369676e6564204d6573736167653a0a31"; // "Bitcoin Signed Message:\n"
 
     /// Convert "message" literal string (Text) to hexacedal format
@@ -128,14 +127,13 @@ fn calculate_bitcoin_hash(message: ByteArray) -> u256 {
     for i in 0..message.len() {
         hex_input_message += format!("{:x}", message[i]);
     }
-    println!("hex_input_message length: {}", hex_input_message.len());
-    //assert!(hex_input_message.len() % 2 == 0, "Invalid hex string length");
-    println!("hex_input_message: {}", hex_input_message.clone());
-    let full_message = ByteArrayTrait::concat(@hex_prefix_message, @hex_input_message);
-    println!("Full message length: {}", full_message.len());
-    println!("Full message: hex {}", full_message.clone());
-    let word_array = words_from_hex(full_message);
-    double_sha256_word_array(word_array).into()
+    let hex_full_message = ByteArrayTrait::concat(@hex_prefix_message, @hex_input_message);
+    let word_array = words_from_hex(hex_full_message);
+    /// Base16 format of the message
+    let bytes_double_sha_256: ByteArray = double_sha256_word_array(word_array).into();
+    let dec_double_sha_256: u256 = byte_array_to_u256_dec(@bytes_double_sha_256.clone());
+
+    dec_double_sha_256
 }
 
 /// @dev The only function needed to be called from the contract
@@ -143,4 +141,16 @@ pub fn is_valid_bitcoin_signature(
     message: ByteArray, public_key: BitcoinPublicKey, signature: Secp256Signature,
 ) -> bool {
     is_bitcoin_signature_valid(calculate_bitcoin_hash(message), public_key, signature)
+}
+
+
+pub fn byte_array_to_u256_dec(data: @ByteArray) -> u256 {
+    let mut result: u256 = 0;
+    let mut i = 0;
+    while i != data.len() {
+        let value: u256 = data[i].into();
+        result = result * 256 + value;
+        i += 1;
+    }
+    result
 }

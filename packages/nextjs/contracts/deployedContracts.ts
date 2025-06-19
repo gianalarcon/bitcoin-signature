@@ -7,7 +7,7 @@ const deployedContracts = {
   devnet: {
     BitcoinSignature: {
       address:
-        "0x505af9414212829b7ffac10f3d486556f6297a94c7d98784105ad112bf40afd",
+        "0x3b2d1ed378ac49a737e0934432702c6495fbd03a83aafe5ebf9879bc4f77e0c",
       abi: [
         {
           type: "impl",
@@ -181,7 +181,7 @@ const deployedContracts = {
         },
       ],
       classHash:
-        "0x733f5fcae7f9868aada9d3484044fb846011244c229fea5415fe3058af988c",
+        "0x3ccee32b7811b2b16a32c7356c975120ea626059119b867967e2a1371c34ff8",
     },
   },
 } as const;
