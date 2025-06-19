@@ -45,9 +45,9 @@ async function hashMessage(message: string): Promise<Uint8Array> {
 
   // Print the exact message being hashed as a string
   const fullString = new TextDecoder().decode(full);
-  console.log("Exact message being hashed (first hash):", fullString);
+  console.log("Exact message being hashed (first hash): ", fullString);
   console.log(
-    "Exact message in hex:",
+    "Exact message in hex: ",
     Array.from(full)
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("")
@@ -58,19 +58,19 @@ async function hashMessage(message: string): Promise<Uint8Array> {
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
   const firstHashDecimal = Array.from(firstHash).join(", ");
-  console.log("firstHash (hex):", firstHashHex);
-  console.log("firstHash (decimal):", firstHashDecimal);
+  console.log("firstHash (hex): ", firstHashHex);
+  //console.log("firstHash (decimal): ", firstHashDecimal);
 
   // Print the exact message being hashed for second hash
-  console.log("Exact message being hashed (second hash):", firstHashHex);
+  console.log("Exact message being hashed (second hash): ", firstHashHex);
 
   const finalHash = await sha256(firstHash);
   const finalHashHex = Array.from(finalHash)
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
   const finalHashDecimal = Array.from(finalHash).join(", ");
-  console.log("finalHash (hex):", finalHashHex);
-  console.log("finalHash (decimal):", finalHashDecimal);
+  console.log("finalHash (hex): ", finalHashHex);
+  //console.log("finalHash (decimal): ", finalHashDecimal);
   return finalHash;
 }
 
@@ -87,7 +87,7 @@ interface EcdsaSignatureResult {
 
 export default function BitcoinSignVerify() {
   const [walletAddress, setWalletAddress] = useState(
-    "bc1q8s30a5gn0zs5k0rvvxm9ay607w2gl0fux7jn88"
+    "bc1qhrwnx54j576p60xlf2yg57pdnefc8k03e6mr99"
   );
   const [message, setMessage] = useState(
     "Sign this message to verify your Bitcoin address."
@@ -133,6 +133,7 @@ export default function BitcoinSignVerify() {
     r: string,
     s: string
   ): Promise<boolean> {
+	console.log("Verifying the message:", message);
     const hashBytes = await hashMessage(message);
     const rHex = BigInt(r).toString(16);
     const sHex = BigInt(s).toString(16);
@@ -152,11 +153,15 @@ export default function BitcoinSignVerify() {
       );
       setSignatureResult(sigData);
 
+	  console.log("Message to sign:", result.message);
+
       const hashBytes = await hashMessage(result.message);
       const hashHex = Array.from(hashBytes)
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
       setHash(hashHex);
+
+	  console.log("Hash of the message:", hashHex);
 
       const isValid = await verifySignature(
         result.publicKey,

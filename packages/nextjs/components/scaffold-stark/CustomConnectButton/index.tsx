@@ -63,7 +63,7 @@ export const CustomConnectButton = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connector]);
-  console.log("BITCOIN ACCOUNT", account, status, accountChainId);
+  //console.log("BITCOIN ACCOUNT", account, status, accountChainId);
 
   if (status === "disconnected" || chainId === 0n) return <ConnectModal />;
 

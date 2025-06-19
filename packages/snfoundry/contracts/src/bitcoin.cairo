@@ -84,7 +84,8 @@ pub fn hex_char_to_nibble(hex_char: u8) -> u8 {
         // a-f
         hex_char - 87
     } else {
-        panic!("Invalid hex character: {hex_char}");
+        println!("Invalid hex character: {}", hex_char);
+        assert!(false, "Invalid hex character");
         0
     }
 }
@@ -102,7 +103,7 @@ pub fn words_from_hex(hex_string: ByteArray) -> WordArray {
         words.append_u8(hi * 16 + lo);
         i += 2;
     }
-
+    println!("Words from hex: {:?}", words);
     words
 }
 
@@ -112,7 +113,28 @@ pub fn words_from_hex(hex_string: ByteArray) -> WordArray {
 // cairo corelib sha256 implementation:
 // https://github.com/starkware-libs/cairo/blob/d5f083c3388c3c0c462dd3805cdd5531401a3783/corelib/src/sha256.cairo#L9
 fn calculate_bitcoin_hash(message: ByteArray) -> u256 {
-    let word_array = words_from_hex(message);
+    /// Hexadecimal format of the prefix message, same as the one used off chain on UI
+    let mut hex_prefix_message: ByteArray =
+        "18426974636f696e205369676e6564204d6573736167653a0a31"; // "Bitcoin Signed Message:\n"
+
+    /// Convert "message" literal string (Text) to hexacedal format
+    // Note: The prefix is already in hexadecimal format, so we can directly use it.
+    // The message is converted to a hex string, which is then concatenated with the prefix.
+    // The prefix is a fixed string that is used in Bitcoin to indicate the start of a signed
+    // message.
+
+    // Convert the message to a hex string
+    let mut hex_input_message: ByteArray = "";
+    for i in 0..message.len() {
+        hex_input_message += format!("{:x}", message[i]);
+    }
+    println!("hex_input_message length: {}", hex_input_message.len());
+    //assert!(hex_input_message.len() % 2 == 0, "Invalid hex string length");
+    println!("hex_input_message: {}", hex_input_message.clone());
+    let full_message = ByteArrayTrait::concat(@hex_prefix_message, @hex_input_message);
+    println!("Full message length: {}", full_message.len());
+    println!("Full message: hex {}", full_message.clone());
+    let word_array = words_from_hex(full_message);
     double_sha256_word_array(word_array).into()
 }
 

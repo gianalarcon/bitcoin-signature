@@ -21,7 +21,7 @@ export function useAccount(): UseAccountResult {
   }, [status, account]);
 
   const [accountChainId, setAccountChainId] = useState<bigint>(0n);
-  console.log("BITCOIN ACCOUNT", account, address, status, accountChainId);
+  //console.log("BITCOIN ACCOUNT", account, address, status, accountChainId);
 
   useEffect(() => {
     if (account) {
@@ -30,9 +30,9 @@ export function useAccount(): UseAccountResult {
           let chainId: string | bigint;
 
           if (typeof account.getChainId === "function") {
-            console.log("HOLA");
+            //console.log("HOLA");
             chainId = await account.getChainId();
-            console.log("CHAIN ID", chainId);
+            //console.log("CHAIN ID", chainId);
           } else if ((account as any).channel?.getChainId) {
             chainId = await (account as any).channel.getChainId();
           } else {
@@ -40,7 +40,7 @@ export function useAccount(): UseAccountResult {
           }
 
           if (chainId) {
-            console.log("IF CHAIN ID", chainId);
+            //console.log("IF CHAIN ID", chainId);
             setAccountChainId(BigInt(chainId.toString()));
           }
         } catch (error) {
