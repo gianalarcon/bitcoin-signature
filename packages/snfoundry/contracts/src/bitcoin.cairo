@@ -114,7 +114,7 @@ pub fn words_from_hex(hex_string: ByteArray) -> WordArray {
 fn calculate_bitcoin_hash(message: ByteArray) -> u256 {
     /// Hexadecimal format of the prefix message, same as the one used off chain on UI
     let hex_prefix_message: ByteArray =
-        "18426974636f696e205369676e6564204d6573736167653a0a31"; // "Bitcoin Signed Message:\n"
+        "18426974636f696e205369676e6564204d6573736167653a0a"; // "Bitcoin Signed Message:\n"
 
     /// Convert "message" literal string (Text) to hexacedal format
     // Note: The prefix is already in hexadecimal format, so we can directly use it.
@@ -122,17 +122,27 @@ fn calculate_bitcoin_hash(message: ByteArray) -> u256 {
     // The prefix is a fixed string that is used in Bitcoin to indicate the start of a signed
     // message.
 
-    // Convert the message to a hex string
-    let mut hex_input_message: ByteArray = "";
+    /// Convert the message to a hex string
+    /// Init with the length of the message in hex
+    let mut hex_input_message: ByteArray = format!("{:x}", message.len());
+    /// Append the message bytes in hex format
     for i in 0..message.len() {
         hex_input_message += format!("{:x}", message[i]);
     }
+	if hex_input_message.len() % 2 != 0 {
+		// If the length is odd, prepend a zero to make it even
+		hex_input_message = format!("0{}", hex_input_message);
+	}
+    println!("Hex input message: {}", hex_input_message);
     let hex_full_message = ByteArrayTrait::concat(@hex_prefix_message, @hex_input_message);
+    println!("Hex full message: {}", hex_full_message);
     let word_array = words_from_hex(hex_full_message);
+    println!("Word array: {:?}", word_array);
     /// Base16 format of the message
     let bytes_double_sha_256: ByteArray = double_sha256_word_array(word_array).into();
+    println!("Bytes double sha 256: {:?}", bytes_double_sha_256);
     let dec_double_sha_256: u256 = byte_array_to_u256_dec(@bytes_double_sha_256.clone());
-
+    println!("Decimal double sha 256: {}", dec_double_sha_256);
     dec_double_sha_256
 }
 
