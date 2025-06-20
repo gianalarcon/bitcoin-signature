@@ -123,9 +123,9 @@ fn calculate_bitcoin_hash(message: ByteArray) -> u256 {
     // message.
 
     /// Convert the message to a hex string
-    /// Init with the length of the message in hex
+    /// Init to append the length of the message in hex
     let mut hex_input_message: ByteArray = format!("{:x}", message.len());
-    /// Append the message bytes in hex format
+    /// Append the message body in hex format
     for i in 0..message.len() {
         hex_input_message += format!("{:x}", message[i]);
     }
@@ -133,16 +133,14 @@ fn calculate_bitcoin_hash(message: ByteArray) -> u256 {
 		// If the length is odd, prepend a zero to make it even
 		hex_input_message = format!("0{}", hex_input_message);
 	}
-    println!("Hex input message: {}", hex_input_message);
     let hex_full_message = ByteArrayTrait::concat(@hex_prefix_message, @hex_input_message);
-    println!("Hex full message: {}", hex_full_message);
-    let word_array = words_from_hex(hex_full_message);
-    println!("Word array: {:?}", word_array);
-    /// Base16 format of the message
+    
+	let word_array = words_from_hex(hex_full_message);
+    /// Calculate the double SHA256 hash of the message
+	/// result is in bytes format
     let bytes_double_sha_256: ByteArray = double_sha256_word_array(word_array).into();
-    println!("Bytes double sha 256: {:?}", bytes_double_sha_256);
-    let dec_double_sha_256: u256 = byte_array_to_u256_dec(@bytes_double_sha_256.clone());
-    println!("Decimal double sha 256: {}", dec_double_sha_256);
+	/// Convert the byters to a u256 decimal number
+	let dec_double_sha_256: u256 = byte_array_to_u256_dec(@bytes_double_sha_256.clone());
     dec_double_sha_256
 }
 
